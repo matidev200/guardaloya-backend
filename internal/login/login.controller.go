@@ -17,7 +17,8 @@ type LoginRequest struct {
 type Response struct {
     Status  string `json:"status"`
     Message string `json:"message"`
-    Token   string `json:"token,omitempty"` 
+    Token   string `json:"token,omitempty"`
+	UserId int `json:"userID"`
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -53,6 +54,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Status:  "success",
 		Message: "Login Approved",
 		Token:   tokenString,
+		UserId: dbUser.ID,
 	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)

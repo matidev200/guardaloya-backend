@@ -11,6 +11,7 @@ import (
 	"github.com/matidev200/guardaloya-backend/internal/credentials"
 	"github.com/matidev200/guardaloya-backend/internal/database"
 	"github.com/matidev200/guardaloya-backend/internal/login"
+	"github.com/matidev200/guardaloya-backend/internal/middleware"
 	"github.com/matidev200/guardaloya-backend/internal/users"
 )
 
@@ -47,12 +48,12 @@ func main() {
 	database.NewDatabase()
 	router.HandleFunc("/login", login.LoginHandler).Methods("POST")
 	router.HandleFunc("/register", users.CreateUser ).Methods("POST")
-	router.HandleFunc("/credential", credentials.CreateCredential).Methods("POST")
-	router.HandleFunc("/credential", credentials.CreateCredential).Methods(http.MethodOptions)
-	router.HandleFunc("/credential/{id}", credentials.UpdateCredential).Methods("PATCH")
-	router.HandleFunc("/credential/{id}", credentials.GetCredential).Methods("GET")
-	router.HandleFunc("/credential/{id}", credentials.DeleteCredential).Methods("DELETE")
-	router.HandleFunc("/credentials", credentials.GetCredentials).Methods("GET")
+	router.HandleFunc("/credential", middleware.AuthMiddleware(credentials.CreateCredential)).Methods("POST")
+	router.HandleFunc("/credential", middleware.AuthMiddleware(credentials.CreateCredential)).Methods(http.MethodOptions)
+	router.HandleFunc("/credential/{id}", middleware.AuthMiddleware(credentials.UpdateCredential)).Methods("PATCH")
+	router.HandleFunc("/credential/{id}", middleware.AuthMiddleware(credentials.GetCredential)).Methods("GET")
+	router.HandleFunc("/credential/{id}", middleware.AuthMiddleware(credentials.DeleteCredential)).Methods("DELETE")
+	router.HandleFunc("/credentials", middleware.AuthMiddleware(credentials.GetCredentials)).Methods("GET")
 
 	err := http.ListenAndServe(":8080", router);
 	if err != nil {
